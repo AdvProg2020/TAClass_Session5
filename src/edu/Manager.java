@@ -126,4 +126,23 @@ public class Manager {
     public String getCurrentSemester() {
         return currentSemester;
     }
+
+    public Person receiveLoanFor(String nationalCode) {
+        Person person;
+        for (Student student : students) {
+            if (student.getNationalCode().equals(nationalCode)) {
+                person = student;
+                person.receiveLoan();
+                return student;
+            }
+        }
+        for (Professor professor : professors) {
+            if (professor.getNationalCode().equals(nationalCode)) {
+                person = professor;
+                person.receiveLoan();
+                return professor;
+            }
+        }
+        return null;
+    }
 }

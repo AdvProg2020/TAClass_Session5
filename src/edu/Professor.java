@@ -32,4 +32,14 @@ public class Professor extends Person {
                 ", rank='" + rank + '\'' +
                 '}';
     }
+
+    @Override
+    public void receiveLoan() {
+        loanReceived += Person.LOAN_AMOUNT_PROFESSOR;
+    }
+
+    @Override
+    public String getType() {
+        return "Professor";
+    }
 }

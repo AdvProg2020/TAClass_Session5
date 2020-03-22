@@ -79,4 +79,14 @@ public class Student extends Person {
         }
         coursesThisSemester.clear();
     }
+
+    @Override
+    public void receiveLoan() {
+        loanReceived += Person.LOAN_AMOUNT_STUDENT;
+    }
+
+    @Override
+    public String getType() {
+        return "Student";
+    }
 }

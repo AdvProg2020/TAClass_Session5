@@ -1,11 +1,12 @@
 package edu;
 
-public class Person {
+public abstract class Person {
     protected String firstName;
     protected String lastName;
     protected String nationalCode;
-    private long loanReceived;
-    public static final long LOAN_AMOUNT = 5000000;
+    protected long loanReceived;
+    public static final long LOAN_AMOUNT_STUDENT = 5000000;
+    public static final long LOAN_AMOUNT_PROFESSOR = 10000000;
 
     public Person(String firstName, String lastName, String nationalCode) {
         this.firstName = firstName;
@@ -14,7 +15,19 @@ public class Person {
         this.loanReceived = 0;
     }
 
-    public void receiveLoan() {
-        loanReceived += Person.LOAN_AMOUNT;
+    public abstract String getType();
+
+    public String getNationalCode() {
+        return nationalCode;
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public abstract void receiveLoan();
 }
