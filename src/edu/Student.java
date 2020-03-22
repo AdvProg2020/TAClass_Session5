@@ -3,19 +3,16 @@ package edu;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Student {
+public class Student extends Person {
     private String studentId;
-    private String firstName;
-    private String lastName;
     private HashMap<Course, CourseInfo> coursesThisSemester;
-    private ArrayList<Course> coursesPassed;
+    private HashMap<Course, CourseInfo> coursesPassed;
 
-    public Student(String studentId, String firstName, String lastName) {
+    public Student(String studentId, String firstName, String lastName, String nationalCode) {
+        super(firstName, lastName, nationalCode);
         this.studentId = studentId;
-        this.firstName = firstName;
-        this.lastName = lastName;
         coursesThisSemester = new HashMap<>();
-        coursesPassed = new ArrayList<>();
+        coursesPassed = new HashMap<>();
     }
 
     @Override
@@ -35,8 +32,29 @@ public class Student {
         return coursesThisSemester;
     }
 
-    public ArrayList<Course> getCoursesPassed() {
-        return coursesPassed;
+    public Boolean hasCourseThisSemester(Course course) {
+        return coursesThisSemester.containsKey(course);
+    }
+
+    public Boolean hasPassedCourse(Course course) {
+        for (Course passedCourse : coursesPassed.keySet()) {
+            if (passedCourse.getName().equals(course.getName()))
+                return true;
+        }
+        return false;
+    }
+
+    public Boolean hasPassedPreCourses(Course course) {
+        ArrayList<String> preCoursesNames = course.getPreCourses();
+        for (Course passedCourse : coursesPassed.keySet()) {
+            for (String preCourseName : preCoursesNames) {
+                if (passedCourse.getName().equals(preCourseName)) {
+                    preCoursesNames.remove(preCourseName);
+                    break;
+                }
+            }
+        }
+        return preCoursesNames.isEmpty();
     }
 
     public void takeCourse(Course course) {
@@ -47,24 +65,18 @@ public class Student {
         coursesThisSemester.remove(course);
     }
 
-    public void getMark(Course course, float mark) {
-        for (Course courseLoop : coursesThisSemester.keySet()) {
-            if (courseLoop.getName().equals(course.getName())) {
-                CourseInfo newCourseInfo = coursesThisSemester.get(courseLoop);
-                newCourseInfo.setMark(mark);
-                coursesThisSemester.replace(courseLoop, newCourseInfo);
-                break;
-            }
-        }
+    public void submitMark(Course course, float mark) {
+        CourseInfo courseInfo = coursesThisSemester.get(course);
+        courseInfo.setMark(mark);
     }
 
     public void passCourses() {
         for (Course course : coursesThisSemester.keySet()) {
-            if (coursesThisSemester.get(course).getMark() >= 10) {
-                coursesPassed.add(course);
+            CourseInfo courseInfo = coursesThisSemester.get(course);
+            if (courseInfo.getMark() >= 10) {
+                coursesPassed.put(course, courseInfo);
             }
         }
         coursesThisSemester.clear();
     }
-
 }

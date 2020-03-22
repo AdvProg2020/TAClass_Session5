@@ -1,6 +1,7 @@
 package edu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
 public class Manager {
@@ -34,12 +35,12 @@ public class Manager {
         return coursesHistory;
     }
 
-    public void addStudent(String studentId, String studentFirstName, String studentLastName) {
-        students.add(new Student(studentId, studentFirstName, studentLastName));
+    public void addStudent(String studentId, String studentFirstName, String studentLastName, String nationalCode) {
+        students.add(new Student(studentId, studentFirstName, studentLastName, nationalCode));
     }
 
-    public void addProfessor(String professorFirstName, String professorLastName, String professorRank) {
-        professors.add(new Professor(professorFirstName, professorLastName, professorRank));
+    public void addProfessor(String professorFirstName, String professorLastName, String professorRank, String nationalCode) {
+        professors.add(new Professor(professorFirstName, professorLastName, professorRank, nationalCode));
     }
 
     public void addCourse(String courseName, String professorFirstName, String professorLastName, ArrayList<String> preCourses) {
@@ -51,7 +52,7 @@ public class Manager {
         }
     }
 
-    public Student getStudentById(String studentId) {
+    private Student getStudentById(String studentId) {
         for (Student student : students) {
             if (student.getStudentId().equals(studentId))
                 return student;
@@ -59,7 +60,7 @@ public class Manager {
         return null;
     }
 
-    public Course getCourseByName(String courseName) {
+    private Course getCourseByName(String courseName) {
         for (Course course : coursesThisSemester) {
             if (course.getName().equals(courseName))
                 return course;
@@ -67,22 +68,62 @@ public class Manager {
         return null;
     }
 
-    public Boolean hasCourse(Student student, Course course) {
-        return student.getCoursesThisSemester().containsKey(course);
-    }
-
     public Boolean takeCourseForStudent(String courseName, String studentId) {
         Student student = getStudentById(studentId);
         Course course = getCourseByName(courseName);
-        if(!hasCourse(student, course) && (course.getPreCourses().size() == 0)) {
+        if (!student.hasCourseThisSemester(course) && !student.hasPassedCourse(course) &&
+                (course.getPreCourses().size() == 0 || student.hasPassedPreCourses(course))) {
             student.takeCourse(course);
             return true;
         }
         return false;
     }
 
-    public Set<Course> getStudentCoursesThisSemester(String studentId) {
+    public Set<Course> getCoursesOfStudentThisSemester(String studentId) {
         Student student = getStudentById(studentId);
         return student.getCoursesThisSemester().keySet();
+    }
+
+    public HashMap<Course, CourseInfo> getCoursesInfoOfStudentThisSemester(String studentId) {
+        Student student = getStudentById(studentId);
+        return student.getCoursesThisSemester();
+    }
+
+    public void dropCourseForStudent(String courseName, String studentId) {
+        Student student = getStudentById(studentId);
+        Course course = getCourseByName(courseName);
+        student.dropCourse(course);
+    }
+
+    public void submitCourseMarkForStudent(String courseName, float mark, String studentId) {
+        Student student = getStudentById(studentId);
+        Course course = getCourseByName(courseName);
+        student.submitMark(course, mark);
+    }
+
+    public void updateCurrentSemester() {
+        String[] splitCurrentSemester = currentSemester.split("-");
+        int year = Integer.parseInt(splitCurrentSemester[0]);
+        int term = Integer.parseInt(splitCurrentSemester[1]);
+        if (term == 3) {
+            year += 1;
+            term = 1;
+        } else {
+            term += 1;
+        }
+        currentSemester = "" + year + "-" + term;
+    }
+
+    public void goNextSemester() {
+        for (Student student : students) {
+            student.passCourses();
+        }
+        updateCurrentSemester();
+        coursesHistory.addAll(coursesThisSemester);
+        coursesThisSemester.clear();
+    }
+
+    public String getCurrentSemester() {
+        return currentSemester;
     }
 }

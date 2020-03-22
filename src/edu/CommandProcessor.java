@@ -2,6 +2,7 @@ package edu;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class CommandProcessor {
@@ -13,49 +14,77 @@ public class CommandProcessor {
         scanner = new Scanner(System.in);
     }
 
-    public void processAddStudent(String[] splitInput) {
-        manager.addStudent(splitInput[2], splitInput[3], splitInput[4]);
+    private void processAddStudent(String[] splitInput) {
+        manager.addStudent(splitInput[2], splitInput[3], splitInput[4], splitInput[5]);
     }
 
-    public void processAddProfessor(String[] splitInput) {
-        manager.addProfessor(splitInput[2], splitInput[3], splitInput[4]);
+    private void processAddProfessor(String[] splitInput) {
+        manager.addProfessor(splitInput[2], splitInput[3], splitInput[4], splitInput[5]);
     }
 
-    public void processAddCourse(String[] splitInput) {
+    private void processAddCourse(String[] splitInput) {
         ArrayList<String> preCourses = new ArrayList<>();
         if (splitInput.length == 6)
             Collections.addAll(preCourses, splitInput[5].split(","));
         manager.addCourse(splitInput[2], splitInput[3], splitInput[4], preCourses);
     }
 
-    public void processShowStudents() {
+    private void processShowStudents() {
         for (Student student : manager.getStudents()) {
             System.out.println(student);
         }
     }
 
-    public void processShowProfessors() {
+    private void processShowProfessors() {
         for (Professor professor : manager.getProfessors()) {
             System.out.println(professor);
         }
     }
 
-    public void processShowThisSemesterCourses() {
+    private void processShowThisSemesterCourses() {
         for (Course course : manager.getCoursesThisSemester()) {
             System.out.println(course);
         }
     }
 
-    public void processTakeCourse(String[] splitInput) {
-        if (manager.takeCourseForStudent(splitInput[2], splitInput[3]))
-            System.out.println("Successfully took course!");
-        else
-            System.out.println("Failed to take course!");
+    private void processTakeCourse(String[] splitInput) {
+        if (manager.takeCourseForStudent(splitInput[2], splitInput[3])) {
+            System.out.println("Successfully taken the course!");
+        } else {
+            System.out.println("Failed to take the course!");
+        }
     }
 
-    public void processShowCoursesForStudent(String[] splitInput) {
-        for (Course course : manager.getStudentCoursesThisSemester(splitInput[4])) {
+    private void processShowCoursesForStudentThisSemester(String[] splitInput) {
+        for (Course course : manager.getCoursesOfStudentThisSemester(splitInput[4])) {
             System.out.println(course);
+        }
+    }
+
+    private void processDropCourse(String[] splitInput) {
+        manager.dropCourseForStudent(splitInput[2], splitInput[3]);
+    }
+
+    private void processSubmitMark(String[] splitInput) {
+        manager.submitCourseMarkForStudent(splitInput[3], Float.parseFloat(splitInput[4]), splitInput[5]);
+    }
+
+    private void processShowReport(String[] splitInput) {
+        HashMap<Course, CourseInfo> coursesInfo = manager.getCoursesInfoOfStudentThisSemester(splitInput[4]);
+        for (Course course : coursesInfo.keySet()) {
+            System.out.println(course.getName() + " : " + coursesInfo.get(course).getMark());
+        }
+    }
+
+    private void processGoNextSemester() {
+        manager.goNextSemester();
+        System.out.println("Welcome to semester " + manager.getCurrentSemester());
+    }
+
+    private void processShowCoursesHistory(String[] splitInput) {
+        for (Course course : manager.getCoursesHistory()) {
+            if (course.getSemester().equals(splitInput[3]))
+                System.out.println(course);
         }
     }
 
@@ -78,9 +107,18 @@ public class CommandProcessor {
             } else if (input.startsWith("take course")) {
                 processTakeCourse(input.split("\\s"));
             } else if (input.startsWith("show courses for student")) {
-                processShowCoursesForStudent(input.split("\\s"));
-            }
-            else {
+                processShowCoursesForStudentThisSemester(input.split("\\s"));
+            } else if (input.startsWith("drop course")) {
+                processDropCourse(input.split("\\s"));
+            } else if (input.startsWith("submit course mark")) {
+                processSubmitMark(input.split("\\s"));
+            } else if (input.startsWith("show report for student")) {
+                processShowReport(input.split("\\s"));
+            } else if (input.startsWith("go next semester")) {
+                processGoNextSemester();
+            } else if (input.startsWith("show courses history")) {
+                processShowCoursesHistory(input.split("\\s"));
+            } else {
                 System.err.println("invalid command");
             }
         }
