@@ -1,5 +1,8 @@
 package edu;
 
+import edu.menu.MainMenu;
+import edu.menu.Menu;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -129,5 +132,14 @@ public class CommandProcessor {
                 System.err.println("invalid command");
             }
         }
+    }
+
+    public void runWithMenu() {
+        Menu.setScanner(this.scanner);
+        Menu.setManager(this.manager);
+
+        Menu currentMenu = new MainMenu();
+        currentMenu.show();
+        currentMenu.execute();
     }
 }

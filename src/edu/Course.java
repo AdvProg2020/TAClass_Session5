@@ -2,18 +2,6 @@ package edu;
 
 import java.util.ArrayList;
 
-class CourseInfo {
-    private float mark;
-
-    public float getMark() {
-        return mark;
-    }
-
-    public void setMark(float mark) {
-        this.mark = mark;
-    }
-}
-
 public class Course {
     private String name;
     private Professor professor;
